@@ -10,8 +10,6 @@ alias c="clear"
 alias dotfiles="cd $DOTFILES && pstorm ."
 alias library="cd $HOME/Library"
 alias dev="cd $HOME/Dev"
-alias neutrino="cd $HOME/Dev/Neutrino"
-alias amp="neutrino && cd amp-dashboard && pstorm ."
 
 # Laravel
 alias art="php artisan"
@@ -75,3 +73,8 @@ alias unstage="git restore --staged ."
 alias wip="commit wip"
 
 # Work
+alias neutrino="cd $HOME/Dev/Neutrino"
+alias amp="neutrino && cd amp-dashboard && pstorm ."
+alias dash="neutrino && cd dash && pstorm ."
+alias dashapi="neutrino && cd dash/dash-api && pstorm ."
+alias dashclient="neutrino && cd dash/dash-client && pstorm ."
