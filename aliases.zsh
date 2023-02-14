@@ -12,7 +12,6 @@ alias library="cd $HOME/Library"
 alias dev="cd $HOME/Dev"
 
 # Laravel
-alias art="php artisan"
 alias fresh="php artisan migrate:fresh --seed"
 alias seed="php artisan db:seed"
 
@@ -78,3 +77,13 @@ alias amp="neutrino && cd amp-dashboard && pstorm ."
 alias dash="neutrino && cd dash && pstorm ."
 alias dashapi="neutrino && cd dash/dash-api && pstorm ."
 alias dashclient="neutrino && cd dash/dash-client && pstorm ."
+
+function art() {
+    if [[ $(basename $(pwd)) == "dash" ]]; then
+        docker-compose exec api php artisan $1
+    fi
+    if [[ $(basename $(pwd)) == "dash-api" ]]; then
+        docker-compose --file ../docker-compose.yml exec api php artisan $1
+    fi
+}
+
