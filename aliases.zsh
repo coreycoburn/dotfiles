@@ -1,13 +1,13 @@
 # Shortcuts
 alias copyssh="pbcopy < $HOME/.ssh/id_rsa.pub"
-alias reloadshell="source $HOME/.zshrc"
-alias reloaddns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
+alias src="source $HOME/.zshrc"
 alias ll="/usr/local/opt/coreutils/libexec/gnubin/ls -AhlFo --color --group-directories-first"
 alias shrug="echo '¯\_(ツ)_/¯' | pbcopy"
 alias c="clear"
 
 # Directories
-alias dotfiles="cd $DOTFILES && pstorm ."
+alias dotfiles="pstorm $DOTFILES"
+alias zshconfig="pstorm $HOME/.zshrc"
 alias library="cd $HOME/Library"
 alias dev="cd $HOME/Dev"
 
@@ -33,27 +33,30 @@ alias switch="ci && npm install && npm run dev"
 alias docker-composer="docker-compose"
 
 # Database
-function db () {
-   [ ! -f .env ] && { echo "No .env file found."; exit 1; }
+function db() {
+  [ ! -f .env ] && {
+    echo "No .env file found."
+    exit 1
+  }
 
-   DB_CONNECTION=$(grep DB_CONNECTION .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
-   DB_HOST=$(grep DB_HOST .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
-   DB_PORT=$(grep DB_PORT .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
-   DB_DATABASE=$(grep DB_DATABASE .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
-   DB_USERNAME=$(grep DB_USERNAME .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
-   DB_PASSWORD=$(grep DB_PASSWORD .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
+  DB_CONNECTION=$(grep DB_CONNECTION .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
+  DB_HOST=$(grep DB_HOST .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
+  DB_PORT=$(grep DB_PORT .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
+  DB_DATABASE=$(grep DB_DATABASE .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
+  DB_USERNAME=$(grep DB_USERNAME .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
+  DB_PASSWORD=$(grep DB_PASSWORD .env | grep -v -e '^\s*#' | cut -d '=' -f 2-)
 
-   DB_URL="${DB_CONNECTION}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
+  DB_URL="${DB_CONNECTION}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
 
-   echo "Opening ${DB_URL}"
-   open $DB_URL
+  echo "Opening ${DB_URL}"
+  open $DB_URL
 }
 
 # Git
 
 # Git aliases
 alias nah="git reset --hard && git clean -df" # clear changes since last commit
-alias reflog="git reflog show" # show you the history of HEAD
+alias reflog="git reflog show"                # show you the history of HEAD
 alias gs="git status"
 alias gb="git branch"
 alias gc="git checkout"
@@ -79,11 +82,21 @@ alias dashapi="neutrino && cd dash/dash-api && pstorm ."
 alias dashclient="neutrino && cd dash/dash-client && pstorm ."
 
 function art() {
-    if [[ $(basename $(pwd)) == "dash" ]]; then
-        docker-compose exec api php artisan $1
-    fi
-    if [[ $(basename $(pwd)) == "dash-api" ]]; then
-        docker-compose --file ../docker-compose.yml exec api php artisan $1
-    fi
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    docker-compose exec api php artisan $1
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    docker-compose --file ../docker-compose.yml exec api php artisan $1
+  fi
 }
 
+function composer() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    docker-compose exec api composer $1 $2 $3
+    docker cp $(docker-compose ps -q api):/var/www/html/vendor dash-api
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    docker-compose --file ../docker-compose.yml exec api composer $1 $2 $3
+    docker cp $(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor .
+  fi
+}
