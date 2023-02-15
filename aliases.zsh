@@ -75,7 +75,7 @@ alias unstage="git restore --staged ."
 alias wip="commit wip"
 
 # Work
-alias neutrino="cd $HOME/Dev/Neutrino"
+alias neutrino="cd $HOME/Dev/neutrino"
 alias amp="neutrino && cd amp-dashboard && pstorm ."
 alias dash="neutrino && cd dash && pstorm ."
 alias dashapi="neutrino && cd dash/dash-api && pstorm ."
