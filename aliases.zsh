@@ -100,3 +100,25 @@ function composer() {
     docker cp $(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor .
   fi
 }
+
+function xon() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.api
+    docker-compose up -d api
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
+    docker-compose --file ../docker-compose.yml up -d api
+  fi
+}
+
+function xoff() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.api
+    docker-compose up -d api
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" ../.docker/env/.env.api
+    docker-compose --file ../docker-compose.yml up -d api
+  fi
+}
