@@ -1,3 +1,54 @@
+function php() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    docker-compose exec api php $1 $2 $3
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    docker-compose --file ../docker-compose.yml exec api php $1 $2 $3
+  fi
+}
+
+function art() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    docker-compose exec api php artisan $1 $2 $3
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    docker-compose --file ../docker-compose.yml exec api php artisan $1 $2 $3
+  fi
+}
+
+function composer() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    docker-compose exec api composer $1 $2 $3
+    docker cp $(docker-compose ps -q api):/var/www/html/vendor dash-api
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    docker-compose --file ../docker-compose.yml exec api composer $1 $2 $3
+    docker cp $(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor .
+  fi
+}
+
+function xon() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.api
+    docker-compose up -d api
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
+    docker-compose --file ../docker-compose.yml up -d api
+  fi
+}
+
+function xoff() {
+  if [[ $(basename $(pwd)) == "dash" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.api
+    docker-compose up -d api
+  fi
+  if [[ $(basename $(pwd)) == "dash-api" ]]; then
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" ../.docker/env/.env.api
+    docker-compose --file ../docker-compose.yml up -d api
+  fi
+}
+
 # Shortcuts
 alias copyssh="pbcopy < $HOME/.ssh/id_rsa.pub"
 alias src="source $HOME/.zshrc"
@@ -12,7 +63,6 @@ alias library="cd $HOME/Library"
 alias dev="cd $HOME/Dev"
 
 # Laravel
-alias fresh="php artisan migrate:fresh --seed"
 alias seed="php artisan db:seed"
 
 # PHP
@@ -75,50 +125,21 @@ alias unstage="git restore --staged ."
 alias wip="commit wip"
 
 # Work
-alias neutrino="cd $HOME/Dev/neutrino"
-alias amp="neutrino && cd amp-dashboard && pstorm ."
-alias dash="neutrino && cd dash && pstorm ."
-alias dashapi="neutrino && cd dash/dash-api && pstorm ."
-alias dashclient="neutrino && cd dash/dash-client && pstorm ."
+work_path="$HOME/Dev/neutrino"
+amp_path="$work_path/amp-dashboard"
+dash_path="$work_path/dash"
+dash_api_path="$dash_path/dash-api"
+dash_client_path="$dash_path/dash-client"
 
-function art() {
-  if [[ $(basename $(pwd)) == "dash" ]]; then
-    docker-compose exec api php artisan $1
-  fi
-  if [[ $(basename $(pwd)) == "dash-api" ]]; then
-    docker-compose --file ../docker-compose.yml exec api php artisan $1
-  fi
-}
+alias workp="cd $work_path"
+alias ampp="cd $amp_path"
+alias dashp="cd $dash_path"
+alias dashapip="cd $dash_api_path"
+alias dashclientp="cd $dash_client_path"
 
-function composer() {
-  if [[ $(basename $(pwd)) == "dash" ]]; then
-    docker-compose exec api composer $1 $2 $3
-    docker cp $(docker-compose ps -q api):/var/www/html/vendor dash-api
-  fi
-  if [[ $(basename $(pwd)) == "dash-api" ]]; then
-    docker-compose --file ../docker-compose.yml exec api composer $1 $2 $3
-    docker cp $(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor .
-  fi
-}
+alias amp="pstorm $amp_path"
+alias dash="pstorm $dash_path"
+alias dashapi="pstorm $dash_api_path"
+alias dashclient="pstorm $dash_client_path"
 
-function xon() {
-  if [[ $(basename $(pwd)) == "dash" ]]; then
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.api
-    docker-compose up -d api
-  fi
-  if [[ $(basename $(pwd)) == "dash-api" ]]; then
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
-    docker-compose --file ../docker-compose.yml up -d api
-  fi
-}
-
-function xoff() {
-  if [[ $(basename $(pwd)) == "dash" ]]; then
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.api
-    docker-compose up -d api
-  fi
-  if [[ $(basename $(pwd)) == "dash-api" ]]; then
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" ../.docker/env/.env.api
-    docker-compose --file ../docker-compose.yml up -d api
-  fi
-}
+alias fresh="art migrate:fresh --seed"
