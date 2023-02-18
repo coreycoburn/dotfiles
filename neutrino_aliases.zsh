@@ -1,6 +1,6 @@
 ###########################################################
 # NEUTRINO ALIASES AND FUNCTIONS
-# Feel free to add your own aliases and functions here.
+# Feel free to make a pull request to add your own aliases
 ###########################################################
 
 # General
