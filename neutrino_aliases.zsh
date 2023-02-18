@@ -65,7 +65,7 @@ alias cddashapi="cd $DASH_API_DIR"
 alias cddashclient="cd $DASH_CLIENT_DIR"
 
 ###########################################################
-# Commands for all projects
+# Functions for all projects
 ###########################################################
 # Run PHP commands in Docker containers
 function php() {
