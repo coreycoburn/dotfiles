@@ -43,32 +43,26 @@ alias seed="artisan db:seed"
 ###########################################################
 # AMP
 ###########################################################
-# Paths
-amp_path="$NEUTRINO_DIR/amp-dashboard"
 
 # Open AMP repo in PhpStorm
-alias amp="pstorm $amp_path"
+alias amp="pstorm $AMP_DIR"
 
 # Change directory to AMP
-alias cdamp="cd $amp_path"
+alias cdamp="cd $AMP_DIR"
 
 ###########################################################
 # DASH
 ###########################################################
-# Paths
-dash_path="$NEUTRINO_DIR/dash"
-dash_api_path="$dash_path/dash-api"
-dash_client_path="$dash_path/dash-client"
 
 # Open DASH repos in PhpStorm
-alias dash="pstorm $dash_path"
-alias dashapi="pstorm $dash_api_path"
-alias dashclient="pstorm $dash_client_path"
+alias dash="pstorm $DASH_DIR"
+alias dashapi="pstorm $DASH_API_DIR"
+alias dashclient="pstorm $DASH_CLIENT_DIR"
 
 # Change directory to DASH repos
-alias cddash="cd $dash_path"
-alias cddashapi="cd $dash_api_path"
-alias cddashclient="cd $dash_client_path"
+alias cddash="cd $DASH_DIR"
+alias cddashapi="cd $DASH_API_DIR"
+alias cddashclient="cd $DASH_CLIENT_DIR"
 
 ###########################################################
 # Commands for all projects
@@ -76,7 +70,7 @@ alias cddashclient="cd $dash_client_path"
 # Run PHP commands in Docker containers
 function php() {
  case $PWD in
-   $dash_api_path)
+   $DASH_API_DIR)
      docker-compose --file ../docker-compose.yml exec api php "$@"
      ;;
    *)
@@ -88,7 +82,7 @@ function php() {
 # Run Composer commands in Docker containers
 function composer() {
  case $PWD in
-   $dash_api_path)
+   $DASH_API_DIR)
      docker-compose --file ../docker-compose.yml exec api composer "$@"
      docker cp $(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor .
      ;;
@@ -101,7 +95,7 @@ function composer() {
 # Run Artisan commands in Docker containers
 function artisan() {
   case $PWD in
-  $dash_api_path)
+  $DASH_API_DIR)
     docker-compose --file ../docker-compose.yml exec api php artisan "$@"
     ;;
   *)
@@ -113,7 +107,7 @@ function artisan() {
 # Turn Xdebug on
 function xoff() {
  case $PWD in
-   $dash_api_path)
+   $DASH_API_DIR)
      sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
      docker-compose --file ../docker-compose.yml up -d api
      ;;
@@ -126,7 +120,7 @@ function xoff() {
 # Turn Xdebug off
 function xoff() {
  case $PWD in
-   $dash_api_path)
+   $DASH_API_DIR)
      sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" ../.docker/env/.env.api
      docker-compose --file ../docker-compose.yml up -d api
      ;;
