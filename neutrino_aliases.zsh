@@ -4,9 +4,9 @@
 ###########################################################
 
 # General
-alias copyssh="pbcopy < $HOME/.ssh/id_rsa.pub"
-alias src="source $HOME/.zshrc"
+alias copyssh="pbcopy < $HOME/.ssh/id_ed25519.pub"
 alias shrug="echo '¯\_(ツ)_/¯' | pbcopy"
+alias src="source $HOME/.zshrc"
 alias c="clear"
 
 # Change directory to Neutrino
