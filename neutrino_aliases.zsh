@@ -105,7 +105,7 @@ function artisan() {
 }
 
 # Turn Xdebug on
-function xoff() {
+function xon() {
  case $PWD in
    $DASH_API_DIR)
      sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
