@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ###########################################################
 # NEUTRINO ALIASES AND FUNCTIONS
 # Feel free to make a pull request to add your own aliases
@@ -128,4 +130,32 @@ function xoff() {
      echo "Xdebug off command not found for this project."
      ;;
    esac
+}
+
+function sshamp() {
+  case $1 in
+   "prod")
+      server_tld="amplistings.com"
+     ;;
+   "staging")
+     server_tld="staging.amplistings.com"
+     ;;
+    "demo")
+     server_tld="demo.amplistings.com"
+     ;;
+   *)
+     echo "Server not found. Please select a server: prod, staging, or demo."
+     return 1
+     ;;
+ esac
+
+  if [ "$2" = "amp" ]; then
+    sshpass -p "$AMP_USER_SERVER_PASSWORD" ssh -p 2080 -t "$AMP_USER_SERVER_USERNAME@$server_tld" \
+      "cd /var/www/amp/amp-dashboard && bash -i"
+    return 0
+  fi
+
+  sshpass -p "$PERSONAL_USER_SERVER_PASSWORD" ssh -p 2080 -t "$PERSONAL_USER_SERVER_USERNAME@$server_tld" \
+    "cd /var/www/amp/amp-dashboard && bash -i"
+  return 0
 }
