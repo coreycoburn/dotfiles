@@ -6,13 +6,13 @@
 ###########################################################
 
 # General
-alias copyssh="pbcopy < $HOME/.ssh/id_ed25519.pub"
-alias shrug="echo '¯\_(ツ)_/¯' | pbcopy"
-alias src="source $HOME/.zshrc"
+alias copyssh='pbcopy < "$HOME/.ssh/id_ed25519.pub"'
+alias shrug='echo "¯\_(ツ)_/¯" | pbcopy'
+alias src='source "$HOME/.zshrc"'
 alias c="clear"
 
 # Change directory to Neutrino
-alias cdneutrino="cd $NEUTRINO_DIR"
+alias cdneutrino='cd "$NEUTRINO_DIR"'
 
 ###########################################################
 # Git
@@ -22,11 +22,11 @@ alias ga='git add'
 alias gaa='git add --all'
 alias gb="git branch"
 alias gba="git branch --all"
-alias gbd='git branch --delete'
+alias gbd="git branch --delete"
 alias gs="git status"
 alias gch="git checkout"
-alias gc='git commit --verbose'
-alias gcb='git checkout -b'
+alias gc="git commit --verbose"
+alias gcb="git checkout -b"
 alias gl="git log --oneline --decorate --color"
 alias diff="git diff"
 alias amend="git add . && git commit --amend --no-edit"
@@ -47,24 +47,24 @@ alias seed="artisan db:seed"
 ###########################################################
 
 # Open AMP repo in PhpStorm
-alias amp="pstorm $AMP_DIR"
+alias amp='pstorm "$AMP_DIR"'
 
 # Change directory to AMP
-alias cdamp="cd $AMP_DIR"
+alias cdamp='cd "$AMP_DIR"'
 
 ###########################################################
 # DASH
 ###########################################################
 
 # Open DASH repos in PhpStorm
-alias dash="pstorm $DASH_DIR"
-alias dashapi="pstorm $DASH_API_DIR"
-alias dashclient="pstorm $DASH_CLIENT_DIR"
+alias dash='pstorm "$DASH_DIR"'
+alias dashapi='pstorm "$DASH_API_DIR"'
+alias dashclient='pstorm "$DASH_CLIENT_DIR"'
 
 # Change directory to DASH repos
-alias cddash="cd $DASH_DIR"
-alias cddashapi="cd $DASH_API_DIR"
-alias cddashclient="cd $DASH_CLIENT_DIR"
+alias cddash='cd "$DASH_DIR"'
+alias cddashapi='cd "$DASH_API_DIR"'
+alias cddashclient='cd "$DASH_CLIENT_DIR"'
 
 ###########################################################
 # Functions for all projects
@@ -72,7 +72,7 @@ alias cddashclient="cd $DASH_CLIENT_DIR"
 # Run PHP commands in Docker containers
 function php() {
   case $PWD in
-  $DASH_API_DIR)
+  "$DASH_API_DIR")
     docker-compose --file ../docker-compose.yml exec api php "$@"
     ;;
   *)
@@ -84,9 +84,9 @@ function php() {
 # Run Composer commands in Docker containers
 function composer() {
   case $PWD in
-  $DASH_API_DIR)
+  "$DASH_API_DIR")
     docker-compose --file ../docker-compose.yml exec api composer "$@"
-    docker cp $(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor .
+    docker cp "$(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor" .
     ;;
   *)
     echo "Composer command not found for this project."
@@ -97,7 +97,7 @@ function composer() {
 # Run Artisan commands in Docker containers
 function artisan() {
   case $PWD in
-  $DASH_API_DIR)
+  "$DASH_API_DIR")
     docker-compose --file ../docker-compose.yml exec api php artisan "$@"
     ;;
   *)
@@ -109,7 +109,7 @@ function artisan() {
 # Turn Xdebug on
 function xon() {
   case $PWD in
-  $DASH_API_DIR)
+  "$DASH_API_DIR")
     sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
     docker-compose --file ../docker-compose.yml up -d api
     ;;
@@ -122,7 +122,7 @@ function xon() {
 # Turn Xdebug off
 function xoff() {
   case $PWD in
-  $DASH_API_DIR)
+  "$DASH_API_DIR")
     sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" ../.docker/env/.env.api
     docker-compose --file ../docker-compose.yml up -d api
     ;;
@@ -132,8 +132,9 @@ function xoff() {
   esac
 }
 
+# SSH into AMP servers
 function sshamp() {
-  case $1 in
+  case "$1" in
   "prod")
     server_tld="amplistings.com"
     ;;
