@@ -48,6 +48,7 @@ alias seed="artisan db:seed"
 alias build="./.docker/scripts/build.sh"
 alias start="./.docker/scripts/start.sh"
 alias stop="./.docker/scripts/stop.sh"
+alias destroy="docker system prune -a"
 
 ###########################################################
 # AMP
@@ -64,109 +65,60 @@ alias cdamp='cd "$AMP_DIR"'
 ###########################################################
 
 # Open DASH repos in PhpStorm
-alias dash='pstorm "$DASH_DIR"'
 alias dashapi='pstorm "$DASH_API_DIR"'
 alias dashclient='pstorm "$DASH_CLIENT_DIR"'
 
 # Change directory to DASH repos
-alias cddash='cd "$DASH_DIR"'
 alias cddashapi='cd "$DASH_API_DIR"'
 alias cddashclient='cd "$DASH_CLIENT_DIR"'
+
+# Run npm commands in Docker containers
+alias dashnpm="docker-compose run --rm node npm"
 
 ###########################################################
 # Functions for all projects
 ###########################################################
-# Run PHP commands in Docker containers
-function php() {
+# Get the service name for the current project
+function get_service() {
   case $PWD in
   "$AMP_DIR")
-    docker-compose exec app php "$@"
+    echo "amp-app"
     ;;
   "$DASH_API_DIR")
-    docker-compose --file ../docker-compose.yml exec api php "$@"
+    echo "dash-api"
     ;;
   *)
-    echo "PHP command not found for this project."
+    echo "Project not found. Please add to neutrino_aliases.zsh."
     ;;
   esac
+}
+
+# Run PHP commands in Docker containers
+function php() {
+  docker-compose exec "$(get_service)" php "$@"
 }
 
 # Run Composer commands in Docker containers
 function composer() {
-  case $PWD in
-  "$AMP_DIR")
-    docker-compose exec app composer "$@"
-    docker cp "$(docker-compose ps -q app):/var/www/html/vendor" .
-    ;;
-  "$DASH_API_DIR")
-    docker-compose --file ../docker-compose.yml exec api composer "$@"
-    docker cp "$(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor" .
-    ;;
-  *)
-    echo "Composer command not found for this project."
-    ;;
-  esac
+  docker-compose exec "$(get_service)" composer "$@"
+  docker cp "$(docker-compose ps -q "$(get_service)"):/var/www/html/vendor" .
 }
 
 # Run Artisan commands in Docker containers
 function artisan() {
-  case $PWD in
-  "$AMP_DIR")
-    docker-compose exec app php artisan "$@"
-    ;;
-  "$DASH_API_DIR")
-    docker-compose --file ../docker-compose.yml exec api php artisan "$@"
-    ;;
-  *)
-    echo "Artisan command not found for this project."
-    ;;
-  esac
-}
-
-# Run Npm commands in Docker containers
-function npm() {
-  case $PWD in
-  "$AMP_DIR")
-    docker-compose run --rm node npm "$@"
-    ;;
-  *)
-    npm "$@"
-    ;;
-  esac
+  docker-compose exec "$(get_service)" php artisan "$@"
 }
 
 # Turn Xdebug on
 function xon() {
-  case $PWD in
-  "$AMP_DIR")
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.app
-    docker-compose up -d app
-    ;;
-  "$DASH_API_DIR")
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
-    docker-compose --file ../docker-compose.yml up -d api
-    ;;
-  *)
-    echo "Xdebug on command not found for this project."
-    ;;
-  esac
+  sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.app
+  docker-compose up -d "$(get_service)"
 }
 
 # Turn Xdebug off
 function xoff() {
-  case $PWD in
-  "$AMP_DIR")
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.app
-    docker-compose up -d app
-    ;;
-  "$DASH_API_DIR")
-    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" ../.docker/env/.env.api
-    docker-compose --file ../docker-compose.yml up -d api
-    ;;
-  *)
-    echo "Xdebug off command not found for this project."
-    ;;
-  esac
+  sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.app
+  docker-compose up -d "$(get_service)"
 }
 
 # SSH into AMP servers
