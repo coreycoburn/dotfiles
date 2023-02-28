@@ -78,8 +78,8 @@ alias dashnpm="docker-compose run --rm node npm"
 ###########################################################
 # Functions for all projects
 ###########################################################
-# Get the service name for the current project
-function get_service() {
+# Get the app service name for the current project
+function get_app_service() {
   case $PWD in
   "$AMP_DIR")
     echo "amp-app"
@@ -88,37 +88,59 @@ function get_service() {
     echo "dash-api"
     ;;
   *)
-    echo "Project not found. Please add to neutrino_aliases.zsh."
+    echo "Project not found for app. Please add to neutrino_aliases.zsh."
+    ;;
+  esac
+}
+
+# Get the node service name for the current project
+function get_node_service() {
+  case $PWD in
+  "$AMP_DIR")
+    echo "amp-node"
+    ;;
+  *)
+    echo ""
     ;;
   esac
 }
 
 # Run PHP commands in Docker containers
 function php() {
-  docker-compose exec "$(get_service)" php "$@"
+  docker-compose exec "$(get_app_service)" php "$@"
 }
 
 # Run Composer commands in Docker containers
 function composer() {
-  docker-compose exec "$(get_service)" composer "$@"
-  docker cp "$(docker-compose ps -q "$(get_service)"):/var/www/html/vendor" .
+  docker-compose exec "$(get_app_service)" composer "$@"
+  docker cp "$(docker-compose ps -q "$(get_app_service)"):/var/www/html/vendor" .
 }
 
 # Run Artisan commands in Docker containers
 function artisan() {
-  docker-compose exec "$(get_service)" php artisan "$@"
+  docker-compose exec "$(get_app_service)" php artisan "$@"
+}
+
+# Run Artisan commands in Docker containers
+function npm() {
+  if [ -z "$(get_node_service)" ]; then
+    echo "Docker project not found. Using host's NPM."
+    command npm "$@"
+  else
+    docker-compose run --rm "$(get_node_service)" npm "$@"
+  fi
 }
 
 # Turn Xdebug on
 function xon() {
   sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.app
-  docker-compose up -d "$(get_service)"
+  docker-compose up -d "$(get_app_service)"
 }
 
 # Turn Xdebug off
 function xoff() {
   sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.app
-  docker-compose up -d "$(get_service)"
+  docker-compose up -d "$(get_app_service)"
 }
 
 # SSH into AMP servers
