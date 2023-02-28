@@ -48,7 +48,6 @@ alias seed="artisan db:seed"
 alias build="./.docker/scripts/build.sh"
 alias start="./.docker/scripts/start.sh"
 alias stop="./.docker/scripts/stop.sh"
-alias destroy="docker system prune -a"
 
 ###########################################################
 # AMP
@@ -141,6 +140,26 @@ function xon() {
 function xoff() {
   sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.app
   docker-compose up -d "$(get_app_service)"
+}
+
+function docker_destroy() {
+  echo -e "\n\e[38;2;239;68;68mWARNING! This will factory reset all Docker data\e[0m"
+  echo -n "Are you sure you want to continue?  [y/N] "
+  read -r answer
+  if [[ "$answer" =~ ^([Yy]|[Yy][Ee][Ss])$ ]]; then
+    # Process here
+    echo -e "\nProcessing factory reset...\n"
+    docker container prune -f && docker image prune -f \
+      && docker volume prune -f && docker system prune -a -f
+    echo -e "\nAll the Docker data has been destroyed!"
+  else
+    echo -e "\nFactory reset canceled."
+  fi
+}
+
+function docker_shell() {
+  docker-compose exec "$(get_app_service)" bash
+  docker-compose exec "$1" sh
 }
 
 # SSH into AMP servers
