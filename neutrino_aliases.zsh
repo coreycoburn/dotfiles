@@ -149,8 +149,12 @@ function docker_destroy() {
   if [[ "$answer" =~ ^([Yy]|[Yy][Ee][Ss])$ ]]; then
     # Process here
     echo -e "\nProcessing factory reset...\n"
-    docker container prune -f && docker image prune -f \
+
+    docker container stop "$(docker container ls -q)" \
+      && docker container rm --force "$(docker container ls -aq)" \
+      && docker container prune -f && docker image prune -f \
       && docker volume prune -f && docker system prune -a -f
+
     echo -e "\nAll the Docker data has been destroyed!"
   else
     echo -e "\nFactory reset canceled."
