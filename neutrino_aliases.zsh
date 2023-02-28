@@ -24,8 +24,7 @@ alias gb="git branch"
 alias gba="git branch --all"
 alias gbd="git branch --delete"
 alias gs="git status"
-alias gch="git checkout"
-alias gc="git commit --verbose"
+alias gc="git checkout"
 alias gcb="git checkout -b"
 alias gl="git log --oneline --decorate --color"
 alias diff="git diff"
@@ -41,6 +40,14 @@ alias push="git push"
 
 alias fresh="artisan migrate:fresh --seed"
 alias seed="artisan db:seed"
+
+###########################################################
+# Docker
+###########################################################
+
+alias build="./.docker/scripts/build.sh"
+alias start="./.docker/scripts/start.sh"
+alias stop="./.docker/scripts/stop.sh"
 
 ###########################################################
 # AMP
@@ -72,6 +79,9 @@ alias cddashclient='cd "$DASH_CLIENT_DIR"'
 # Run PHP commands in Docker containers
 function php() {
   case $PWD in
+  "$AMP_DIR")
+    docker-compose exec app php "$@"
+    ;;
   "$DASH_API_DIR")
     docker-compose --file ../docker-compose.yml exec api php "$@"
     ;;
@@ -84,6 +94,10 @@ function php() {
 # Run Composer commands in Docker containers
 function composer() {
   case $PWD in
+  "$AMP_DIR")
+    docker-compose exec app composer "$@"
+    docker cp "$(docker-compose ps -q app):/var/www/html/vendor" .
+    ;;
   "$DASH_API_DIR")
     docker-compose --file ../docker-compose.yml exec api composer "$@"
     docker cp "$(docker-compose --file ../docker-compose.yml ps -q api):/var/www/html/vendor" .
@@ -97,6 +111,9 @@ function composer() {
 # Run Artisan commands in Docker containers
 function artisan() {
   case $PWD in
+  "$AMP_DIR")
+    docker-compose exec app php artisan "$@"
+    ;;
   "$DASH_API_DIR")
     docker-compose --file ../docker-compose.yml exec api php artisan "$@"
     ;;
@@ -106,9 +123,25 @@ function artisan() {
   esac
 }
 
+# Run Npm commands in Docker containers
+function npm() {
+  case $PWD in
+  "$AMP_DIR")
+    docker-compose run --rm node npm "$@"
+    ;;
+  *)
+    npm "$@"
+    ;;
+  esac
+}
+
 # Turn Xdebug on
 function xon() {
   case $PWD in
+  "$AMP_DIR")
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.app
+    docker-compose up -d app
+    ;;
   "$DASH_API_DIR")
     sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" ../.docker/env/.env.api
     docker-compose --file ../docker-compose.yml up -d api
@@ -122,6 +155,10 @@ function xon() {
 # Turn Xdebug off
 function xoff() {
   case $PWD in
+  "$AMP_DIR")
+    sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.app
+    docker-compose up -d app
+    ;;
   "$DASH_API_DIR")
     sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" ../.docker/env/.env.api
     docker-compose --file ../docker-compose.yml up -d api
