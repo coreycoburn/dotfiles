@@ -167,7 +167,7 @@ function docker_shell() {
 }
 
 # SSH into AMP servers
-function sshamp() {
+function ssh_amp() {
   case "$1" in
   "prod")
     server_tld="amplistings.com"
@@ -192,5 +192,39 @@ function sshamp() {
 
   sshpass -p "$PERSONAL_USER_SERVER_PASSWORD" ssh -p 2080 -t "$PERSONAL_USER_SERVER_USERNAME@$server_tld" \
     "cd /var/www/amp/amp-dashboard && bash -i"
+  return 0
+}
+
+# SSH into Dash API servers
+function ssh_dash_api() {
+  case "$1" in
+  "prod")
+    server_tld="api.dash.amplistings.com"
+    ;;
+  *)
+    echo "Server not found. Please select a server: prod."
+    return 1
+    ;;
+  esac
+
+  sshpass -p "$AMP_USER_SERVER_PASSWORD" ssh -p 2080 -t "$AMP_USER_SERVER_USERNAME@$server_tld" \
+    "cd /var/www/amp/dash-api && bash -i"
+  return 0
+}
+
+# SSH into Dash client servers
+function ssh_dash_client() {
+  case "$1" in
+  "prod")
+    server_tld="dash.amplistings.com"
+    ;;
+  *)
+    echo "Server not found. Please select a server: prod."
+    return 1
+    ;;
+  esac
+
+  sshpass -p "$AMP_USER_SERVER_PASSWORD" ssh -p 2080 -t "$AMP_USER_SERVER_USERNAME@$server_tld" \
+    "cd /var/www/amp/dash-client && bash -i"
   return 0
 }
