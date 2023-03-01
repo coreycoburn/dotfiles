@@ -38,8 +38,8 @@ alias push="git push"
 # General Laravel
 ###########################################################
 
-alias fresh="artisan migrate:fresh --seed"
-alias seed="artisan db:seed"
+alias fresh="a migrate:fresh --seed"
+alias seed="a db:seed"
 
 ###########################################################
 # Docker
@@ -80,9 +80,9 @@ alias dashnpm="docker-compose run --rm node npm"
 # Automated Testing
 function t() {
   if [ -n "$1" ]; then
-    artisan test --filter "$1"
+    a test --filter "$1"
   else
-    artisan test
+    a test
   fi
 }
 
@@ -98,7 +98,7 @@ function composer() {
 }
 
 # Run Artisan commands in Docker containers
-function artisan() {
+function a() {
   docker-compose exec "$(get_app_service)" php artisan "$@"
 }
 
