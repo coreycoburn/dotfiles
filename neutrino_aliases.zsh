@@ -77,31 +77,13 @@ alias dashnpm="docker-compose run --rm node npm"
 ###########################################################
 # Functions for all projects
 ###########################################################
-# Get the app service name for the current project
-function get_app_service() {
-  case $PWD in
-  "$AMP_DIR")
-    echo "amp-app"
-    ;;
-  "$DASH_API_DIR")
-    echo "dash-api"
-    ;;
-  *)
-    echo "Project not found for app. Please add to neutrino_aliases.zsh."
-    ;;
-  esac
-}
-
-# Get the node service name for the current project
-function get_node_service() {
-  case $PWD in
-  "$AMP_DIR")
-    echo "amp-node"
-    ;;
-  *)
-    echo ""
-    ;;
-  esac
+# Automated Testing
+function t() {
+  if [ -n "$1" ]; then
+    artisan test --filter "$1"
+  else
+    artisan test
+  fi
 }
 
 # Run PHP commands in Docker containers
@@ -227,4 +209,34 @@ function ssh_dash_client() {
   sshpass -p "$AMP_USER_SERVER_PASSWORD" ssh -p 2080 -t "$AMP_USER_SERVER_USERNAME@$server_tld" \
     "cd /var/www/amp/dash-client && bash -i"
   return 0
+}
+
+###########################################################
+# Helper/Abstract Functions
+###########################################################
+# Get the app service name for the current project
+function get_app_service() {
+  case $PWD in
+  "$AMP_DIR")
+    echo "amp-app"
+    ;;
+  "$DASH_API_DIR")
+    echo "dash-api"
+    ;;
+  *)
+    echo "Project not found for app. Please add to neutrino_aliases.zsh."
+    ;;
+  esac
+}
+
+# Get the node service name for the current project
+function get_node_service() {
+  case $PWD in
+  "$AMP_DIR")
+    echo "amp-node"
+    ;;
+  *)
+    echo ""
+    ;;
+  esac
 }
