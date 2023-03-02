@@ -33,6 +33,7 @@ alias commit="git add . && git commit -m"
 alias nah="git reset --hard && git clean -df"
 alias pull="git pull"
 alias push="git push"
+alias grf="gc main -- " # Resets the current branch file to the state of main branch file. Ex. grf .env.example
 
 ###########################################################
 # General Laravel
