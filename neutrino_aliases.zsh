@@ -10,6 +10,7 @@ alias copyssh='pbcopy < "$HOME/.ssh/id_ed25519.pub"'
 alias shrug='echo "¯\_(ツ)_/¯" | pbcopy'
 alias src='source "$HOME/.zshrc"'
 alias c="clear"
+alias ip='curl -s ifconfig.me | tee >(pbcopy) >/dev/null && echo "Your IP address has been copied to clipboard"'
 
 # Change directory to Neutrino
 alias cdneutrino='cd "$NEUTRINO_DIR"'
