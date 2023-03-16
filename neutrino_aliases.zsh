@@ -73,9 +73,6 @@ alias dashclient='pstorm "$DASH_CLIENT_DIR"'
 alias cddashapi='cd "$DASH_API_DIR"'
 alias cddashclient='cd "$DASH_CLIENT_DIR"'
 
-# Run npm commands in Docker containers
-alias dashnpm="docker-compose run --rm node npm"
-
 ###########################################################
 # Functions for all projects
 ###########################################################
@@ -110,19 +107,22 @@ function npm() {
     echo "Docker project not found. Using host's NPM."
     command npm "$@"
   else
-    docker-compose run --rm "$(get_node_service)" npm "$@"
+    docker-compose up -d "$(get_node_service)"
+    docker-compose exec "$(get_node_service)" npm "$@"
+    docker cp "$(docker-compose ps -q "$(get_node_service)"):/app/node_modules" .
+    docker-compose stop "$(get_node_service)"
   fi
 }
 
 # Turn Xdebug on
 function xon() {
-  sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.app
+  sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=debug,develop/g" .docker/env/.env.api
   docker-compose up -d "$(get_app_service)"
 }
 
 # Turn Xdebug off
 function xoff() {
-  sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.app
+  sed -i "" "s/XDEBUG_MODE=.*/XDEBUG_MODE=off/g" .docker/env/.env.api
   docker-compose up -d "$(get_app_service)"
 }
 
