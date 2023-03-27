@@ -107,10 +107,14 @@ function npm() {
     echo "Docker project not found. Using host's NPM."
     command npm "$@"
   else
-    docker-compose up -d "$(get_node_service)"
-    docker-compose exec "$(get_node_service)" npm "$@"
-    docker cp "$(docker-compose ps -q "$(get_node_service)"):/app/node_modules" .
-    docker-compose stop "$(get_node_service)"
+    if [ "$1" = "install" ] || [ "$1" = "remove" ]; then
+      docker-compose up -d "$(get_node_service)"
+      docker-compose exec "$(get_node_service)" npm "$@"
+      docker cp "$(docker-compose ps -q "$(get_node_service)"):/app/node_modules" .
+      docker-compose stop "$(get_node_service)"
+    else
+      docker-compose run --rm "$(get_node_service)" npm "$@"
+    fi
   fi
 }
 
@@ -162,6 +166,9 @@ function ssh_amp() {
   "demo")
     server_tld="demo.amplistings.com"
     ;;
+  "2023")
+      server_tld="2023.app.amplistings.com"
+      ;;
   *)
     echo "Server not found. Please select a server: prod, staging, or demo."
     return 1
