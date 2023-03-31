@@ -50,6 +50,7 @@ alias seed="a db:seed"
 alias build="./.docker/scripts/build.sh"
 alias start="./.docker/scripts/start.sh"
 alias stop="./.docker/scripts/stop.sh"
+alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 
 ###########################################################
 # AMP
