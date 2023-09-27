@@ -57,7 +57,20 @@ alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 ###########################################################
 
 # Open AMP repo in PhpStorm
-alias amp='pstorm "$AMP_DIR"'
+#alias amp='pstorm "$AMP_DIR"'
+function amp() {
+    (cd "$AMP_DIR" && bash amp "$@")
+}
+
+function cire() {
+    bash cire "$@"
+}
+
+function coco() {
+    (bash coco "$@")
+}
+
+
 
 # Change directory to AMP
 alias cdamp='cd "$AMP_DIR"'
@@ -84,17 +97,6 @@ function t() {
   else
     a test
   fi
-}
-
-# Run PHP commands in Docker containers
-function php() {
-  docker-compose exec "$(get_app_service)" php "$@"
-}
-
-# Run Composer commands in Docker containers
-function composer() {
-  docker-compose exec "$(get_app_service)" composer "$@"
-  docker cp "$(docker-compose ps -q "$(get_app_service)"):/var/www/html/vendor" .
 }
 
 # Run Artisan commands in Docker containers
@@ -167,11 +169,23 @@ function ssh_amp() {
   "demo")
     server_tld="demo.amplistings.com"
     ;;
+  "cire-api")
+        server_tld="api.cire.amplistings.com"
+        ;;
+  "cire-demo")
+      server_tld="cire.demo.amplistings.com"
+      ;;
   "2023")
       server_tld="2023.app.amplistings.com"
       ;;
+  "ai")
+        server_tld="ai.amplistings.com"
+        ;;
+  "ssotest")
+        server_tld="ssotest.amplistings.com"
+        ;;
   *)
-    echo "Server not found. Please select a server: prod, staging, or demo."
+    echo "Server not found. Please select a server: prod, staging, demo, cire-demo, 2023, or ai."
     return 1
     ;;
   esac
@@ -184,6 +198,23 @@ function ssh_amp() {
 
   sshpass -p "$PERSONAL_USER_SERVER_PASSWORD" ssh -p 2080 -t "$PERSONAL_USER_SERVER_USERNAME@$server_tld" \
     "cd /var/www/amp/amp-dashboard && bash -i"
+  return 0
+}
+
+# SSH into CIRE API servers
+function ssh_cire_api() {
+  case "$1" in
+  "prod")
+    server_tld="api.cire.amplistings.com"
+    ;;
+  *)
+    echo "Server not found. Please select a server: prod."
+    return 1
+    ;;
+  esac
+
+  sshpass -p "$AMP_USER_SERVER_PASSWORD" ssh -p 2080 -t "$AMP_USER_SERVER_USERNAME@$server_tld" \
+    "cd /home/amp/cire-api && bash -i"
   return 0
 }
 
