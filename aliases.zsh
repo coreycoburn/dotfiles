@@ -14,7 +14,7 @@ alias c="clear"
 alias dotfiles="pstorm $DOTFILES"
 alias zshconfig="pstorm $HOME/.zshrc"
 alias cdlibrary="cd $HOME/Library"
-alias cddev="cd $HOME/Dev"
+alias cddev="cd $HOME/repos"
 
 ###########################################################
 # Docker
